@@ -7,8 +7,16 @@ import json
 import math
 import numpy as np
 from sklearn.cluster import MeanShift, estimate_bandwidth
+from color_app.colors_json import colors
 
-color_json = json.loads(open('colors.json', 'r').read())
+color_json = colors
+
+def test(filename):
+    im = Image.open(filename)  # Can be many different formats.
+    im = im.convert('RGB')
+    pix = im.load()
+    width, height = im.size
+    return width,height
 
 def plot(X, cluster_centers):
     fig = plt.figure()
@@ -42,14 +50,14 @@ def meanshift(data):
 
     # After training the model, We store the
     # coordinates for the cluster centers
-    bandwidth = estimate_bandwidth(X, quantile=0.2, n_samples=len(data))
+    bandwidth = estimate_bandwidth(X, quantile=0.1, n_samples=len(data))
     ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
     ms.fit(X)
     cluster_centers = ms.cluster_centers_
     return cluster_centers
 
-def get_img_data():
-    im = Image.open('C:\\Users\\JPoirier\\PycharmProjects\\DMC_Colors\\tree2.png')  # Can be many different formats.
+def get_img_data(filename):
+    im = Image.open(filename)  # Can be many different formats.
     im = im.convert('RGB')
     pix = im.load()
     width, height = im.size
@@ -59,7 +67,6 @@ def get_img_data():
         for y in range(height):
             total_colors.append(pix[x, y])
     cluster_centers = meanshift(total_colors)
-    # print(cluster_centers)
     for x in range(width):
         for y in range(height):
             min_rgb = (0, 0, 0)
@@ -69,10 +76,12 @@ def get_img_data():
                 if dist < min_dist:
                     min_dist = dist
                     min_rgb = cluster_center
-            print(min_rgb)
             img.putpixel((x, y), (int(min_rgb[0]), int(min_rgb[1]), int(min_rgb[2])))
-
-    img.save('output_ms.png')
+    filename = filename.split("/")[1]
+    newfilename = "media/results/" + filename.split(".")[0] + "_meanshift." + filename.split(".")[1]
+    print(newfilename)
+    img.save(newfilename)
+    return newfilename
 
 def rgbconvert(color):
     return tuple(int(color[i:i+2], 16) for i in (0, 2, 4))

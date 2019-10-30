@@ -1,0 +1,35 @@
+{% extends "index.html" %}
+{% block content %}
+    <h1>File Processing</h1>
+    FILES
+    <table>
+        {% for file in file_urls %}
+            <tr>
+                <td>
+                    <a href="/{{ file }}" >{{ file }}</a>
+                </td>
+                <td>
+                    <button onclick='process("{{ file }}")'>Process</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    PROCESSED
+    <table>
+        {% for file in processed %}
+            <tr>
+                <td>
+                    <a href="/{{ file }}" >{{ file }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <script>
+        function process(filename){
+            console.log(filename);
+            $.ajax({url: "/api/process?filename=" + filename, success: function(result){
+                    $("#div1").html(result);
+                }});
+        }
+    </script>
+{% endblock %}
