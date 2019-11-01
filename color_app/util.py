@@ -11,12 +11,13 @@ from color_app.colors_json import colors
 
 color_json = colors
 
+
 def test(filename):
-    im = Image.open(filename)  # Can be many different formats.
+    im = Image.open(filename)
     im = im.convert('RGB')
-    pix = im.load()
     width, height = im.size
     return width,height
+
 
 def plot(X, cluster_centers):
     fig = plt.figure()
@@ -26,6 +27,7 @@ def plot(X, cluster_centers):
                cluster_centers[:, 2], marker='x', color='red',
                s=300, linewidth=5, zorder=10)
     plt.show()
+
 
 def find_euc_dist(x,y):
     sum = 0
@@ -37,27 +39,27 @@ def find_euc_dist(x,y):
     ed = math.sqrt(sum)
     return ed
 
+
 def create_key(colors):
     img = Image.new('RGB', (200,200))
     ImageDraw.Draw(img).text((0, 0), 'Hello world!', (255,255,255))
     img.save('sample-out.jpg')
+
 
 def meanshift(data):
     t = []
     for tup in data:
         t.append([tup[0], tup[1], tup[2]])
     X = np.asarray(t)
-
-    # After training the model, We store the
-    # coordinates for the cluster centers
     bandwidth = estimate_bandwidth(X, quantile=0.1, n_samples=len(data))
     ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
     ms.fit(X)
     cluster_centers = ms.cluster_centers_
     return cluster_centers
 
-def get_img_data(filename):
-    im = Image.open(filename)  # Can be many different formats.
+
+def process_meanshift(filename):
+    im = Image.open(filename)
     im = im.convert('RGB')
     pix = im.load()
     width, height = im.size
@@ -79,9 +81,9 @@ def get_img_data(filename):
             img.putpixel((x, y), (int(min_rgb[0]), int(min_rgb[1]), int(min_rgb[2])))
     filename = filename.split("/")[1]
     newfilename = "media/results/" + filename.split(".")[0] + "_meanshift." + filename.split(".")[1]
-    print(newfilename)
     img.save(newfilename)
     return newfilename
+
 
 def rgbconvert(color):
     return tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
@@ -120,16 +122,14 @@ def scrape():
     print(json.dumps(color_dict))
 
 
-def get_image_data():
-    im = Image.open('C:\\Users\\JPoirier\\PycharmProjects\\DMC_Colors\\output_ms.png') # Can be many different formats.
+def process_dmc(filename):
+    im = Image.open(filename)
     im = im.convert('RGB')
     pix = im.load()
-    blocking = True
     width, height = im.size
     img = Image.new('RGB', (width,height))
     image_colors = {}
     colors = []
-    total_colors = []
     for x in range(width):
         for y in range(height):
             if pix[x, y] not in image_colors:
@@ -146,17 +146,13 @@ def get_image_data():
                     colors.append(tuple(min_rgb))
             else:
                 img.putpixel((x,y), image_colors[pix[x,y]])
+    filename = filename.split("/")[1]
+    newfilename = "media/dmc_results/" + filename.split(".")[0] + "_dmc." + filename.split(".")[1]
+    img.save(newfilename)
+    return newfilename
 
-
-    print(image_colors)
-    img.save('output.png')
-    print(colors)
 
 if __name__ == '__main__':
-    # scrape()
-    get_img_data()
-    get_image_data()
-    # colors = [(255, 255, 255), (0, 0, 0), (54, 34, 14), (50, 51, 36), (56, 58, 42), (9, 9, 47), (29, 54, 42), (129, 60, 17), (108, 49, 22), (57, 57, 61), (73, 72, 66), (74, 71, 73), (75, 75, 73), (93, 93, 84), (107, 104, 96), (109, 100, 105), (118, 110, 114), (237, 65, 21), (198, 49, 23), (130, 125, 125), (144, 142, 133), (153, 155, 157), (167, 166, 159), (177, 174, 183), (184, 185, 189), (192, 198, 192), (207, 194, 201), (210, 210, 202), (155, 55, 27), (69, 39, 26), (83, 47, 27), (209, 208, 210), (217, 230, 236), (238, 238, 238), (252, 252, 255), (66, 48, 20), (252, 103, 13), (253, 111, 26)]
-
-    # create_key(colors)
+    process_meanshift('base.png')
+    process_dmc('base.png')
 

@@ -24,7 +24,9 @@ urlpatterns = [
     path('', views.index),
     path('upload/', views.simple_upload),
     path('process/', views.process),
-    path('api/process/', views.process_api)
+    path('process_dmc/', views.process_dmc),
+    path('api/process/', views.process_api),
+    path('api/process_dmc/', views.process_dmc_api)
 ]
 
 if settings.DEBUG:
