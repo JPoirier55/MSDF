@@ -1,13 +1,36 @@
 {% extends 'index.html' %}
 {% block content %}
 {% load static %}
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" name="myfile">
-    <button type="submit">Upload</button>
-  </form>
 
+<div class="container">
+  <h1 class="blue-text text-darken-3 center-align">File Upload</h1>
+
+  <!-- File Upload Form -->
+  <div class="row">
+    <form class="col s12" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="file-field input-field">
+        <div class="btn blue darken-3">
+          <span>Choose File</span>
+          <input type="file" name="myfile">
+        </div>
+        <div class="file-path-wrapper">
+          <input class="file-path validate" type="text" placeholder="Upload your file">
+        </div>
+      </div>
+      <button type="submit" class="btn waves-effect waves-light blue darken-3">Upload</button>
+    </form>
+  </div>
+
+  <!-- Uploaded File URL -->
   {% if uploaded_file_url %}
-    <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+  <div class="row">
+    <div class="col s12">
+      <p>File uploaded at: <a href="{{ uploaded_file_url }}" class="blue-text text-darken-3">{{ uploaded_file_url }}</a>
+      </p>
+    </div>
+  </div>
   {% endif %}
+</div>
+
 {% endblock %}

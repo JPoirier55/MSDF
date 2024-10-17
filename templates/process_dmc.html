@@ -1,35 +1,76 @@
 {% extends "index.html" %}
 {% block content %}
-    <h1>DMC COLOR CONVERT</h1>
-    <h2>Files</h2>
-    <table>
-        {% for file in file_urls %}
+
+<!-- Title Section -->
+<div class="container">
+    <h1 class="blue-text text-darken-3 center-align">DMC Color Convert</h1>
+
+    <!-- Files Section -->
+    <h2 class="blue-text text-darken-3">Files</h2>
+
+    <table class="striped centered responsive-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Filename</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in file_urls %}
             <tr>
                 <td>
-                    <a href="/{{ file }}" >{{ file }}</a>
+                    <img src="/{{ file }}" alt="image" class="responsive-img"
+                        style="max-width: 150px; height: auto; border-radius: 8px;">
                 </td>
                 <td>
-                    <button onclick='process_dmc("{{ file }}")'>Process</button>
+                    <a href="/{{ file }}" class="blue-text text-darken-3">{{ file }}</a>
+                </td>
+                <td>
+                    <button class="btn waves-effect waves-light blue darken-3"
+                        onclick='process_dmc("{{ file }}")'>Process</button>
                 </td>
             </tr>
-        {% endfor %}
+            {% endfor %}
+        </tbody>
     </table>
-    <h2>Converted</h2>
-    <table>
-        {% for file in processed %}
+
+    <!-- Converted Section -->
+    <h2 class="blue-text text-darken-3">Converted</h2>
+
+    <table class="striped centered responsive-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Filename</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in processed %}
             <tr>
                 <td>
-                    <a href="/{{ file }}" >{{ file }}</a>
+                    <img src="/{{ file }}" alt="image" class="responsive-img"
+                        style="max-width: 150px; height: auto; border-radius: 8px;">
+                </td>
+                <td>
+                    <a href="/{{ file }}" class="blue-text text-darken-3">{{ file }}</a>
                 </td>
             </tr>
-        {% endfor %}
+            {% endfor %}
+        </tbody>
     </table>
-    <script>
-        function process_dmc(filename){
-            console.log(filename);
-            $.ajax({url: "/api/process_dmc?filename=" + filename, success: function(result){
-                    $("#div1").html(result);
-                }});
-        }
-    </script>
+</div>
+
+<script>
+    function process_dmc(filename) {
+        console.log(filename);
+        $.ajax({
+            url: "/api/process_dmc?filename=" + filename,
+            success: function (result) {
+                $("#div1").html(result);
+            }
+        });
+    }
+</script>
+
 {% endblock %}

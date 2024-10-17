@@ -178,7 +178,7 @@ venv.bak/
 # Spyder project settings
 .spyderproject
 .spyproject
-/media
+
 # Rope project settings
 .ropeproject
 
@@ -192,3 +192,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+
+/media/*.png
+/media/dmc_results/*
+/media/results/*

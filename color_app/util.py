@@ -46,21 +46,24 @@ def create_key(colors):
     img.save('sample-out.jpg')
 
 
-def meanshift(data):
+def meanshift(data, quantile):
+    print('meanshifting')
     t = []
     for tup in data:
         t.append([tup[0], tup[1], tup[2]])
     X = np.asarray(t)
-    bandwidth = estimate_bandwidth(X, quantile=0.1, n_samples=len(data))
+    bandwidth = estimate_bandwidth(X, quantile=quantile, n_samples=len(data))
     ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
     ms.fit(X)
     cluster_centers = ms.cluster_centers_
     return cluster_centers
 
 
-def process_meanshift(filename):
+def process_meanshift(filename, quantile):
+    print('process meanshifting')
     im = Image.open(filename)
     im = im.convert('RGB')
+    im = im.resize((im.size), Image.NEAREST)
     pix = im.load()
     width, height = im.size
     img = Image.new('RGB', (width, height))
@@ -68,7 +71,8 @@ def process_meanshift(filename):
     for x in range(width):
         for y in range(height):
             total_colors.append(pix[x, y])
-    cluster_centers = meanshift(total_colors)
+    cluster_centers = meanshift(total_colors, quantile)
+    print('cluster centers')
     for x in range(width):
         for y in range(height):
             min_rgb = (0, 0, 0)
@@ -79,8 +83,9 @@ def process_meanshift(filename):
                     min_dist = dist
                     min_rgb = cluster_center
             img.putpixel((x, y), (int(min_rgb[0]), int(min_rgb[1]), int(min_rgb[2])))
-    filename = filename.split("/")[1]
+    filename = filename.split("/")[-1]
     newfilename = "media/results/" + filename.split(".")[0] + "_meanshift." + filename.split(".")[1]
+    print(newfilename)
     img.save(newfilename)
     return newfilename
 
@@ -127,26 +132,43 @@ def process_dmc(filename):
     im = im.convert('RGB')
     pix = im.load()
     width, height = im.size
-    img = Image.new('RGB', (width,height))
+    img = Image.new('RGB', (600,800), 'white')
     image_colors = {}
     colors = []
+    dmc_colors = {}
     for x in range(width):
         for y in range(height):
             if pix[x, y] not in image_colors:
                 dist_min = 99999
                 min_rgb = (0, 0, 0)
+                dmc_name = ''
+                id = 0
                 for key, value in list(color_json.items()):
+
                     dist = find_euc_dist(pix[x,y], tuple(value['rgb']))
                     if dist < dist_min:
                         dist_min = dist
+                        dmc_name = value['name']
+                        id = value['number']
                         min_rgb = value['rgb']
-                img.putpixel((x, y), tuple(min_rgb))
+                img.putpixel((x+100, y+100), tuple(min_rgb))
                 image_colors[pix[x,y]] = tuple(min_rgb)
                 if tuple(min_rgb) not in colors:
                     colors.append(tuple(min_rgb))
+                    dmc_colors[id] = {'name': dmc_name, 'rgb': tuple(min_rgb)}
             else:
-                img.putpixel((x,y), image_colors[pix[x,y]])
-    filename = filename.split("/")[1]
+                img.putpixel((x+100,y+100), image_colors[pix[x,y]])
+    I1 = ImageDraw.Draw(img)
+    I1.text((100,height+175), "Colors needed:", (0,0,0))
+    text_space = 0
+    for key, value in list(dmc_colors.items()):
+        I1.ellipse((100, height+200+text_space, 115, height+200+text_space+15), fill=value['rgb'], outline=(125, 125, 125))
+        I1.text((130,height+200+text_space), f"{key} - {value['name']}", (0,0,0))
+        text_space += 20
+
+    print(colors)
+    print(dmc_colors)
+    filename = filename.split("/")[-1]
     newfilename = "media/dmc_results/" + filename.split(".")[0] + "_dmc." + filename.split(".")[1]
     img.save(newfilename)
     return newfilename

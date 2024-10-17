@@ -1,35 +1,87 @@
 {% extends "index.html" %}
 {% block content %}
-    <h1>FILE PROCESSOR</h1>
-    <h2>Files</h2>
-    <table>
-        {% for file in file_urls %}
+
+<!-- Title Section -->
+<div class="container">
+    <h1 class="blue-text text-darken-3 center-align">File Processor</h1>
+
+    <!-- Quantile Selector Section -->
+    <div class="row">
+        <div class="input-field col s12 m6">
+            <h4 class="blue-text text-darken-3">Select a Decimal Number for Quantile (0.00 - 1.00)</h4>
+            <input type="number" id="quantileInput" name="quantile" class="validate" min="0" max="1" step="0.01"
+                value="0.5">
+        </div>
+    </div>
+
+    <!-- Files Section -->
+    <h2 class="blue-text text-darken-3">Files</h2>
+
+    <table class="striped centered responsive-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Link</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in file_urls %}
             <tr>
                 <td>
-                    <a href="/{{ file }}" >{{ file }}</a>
+                    <img src="/{{ file }}" alt="image" class="responsive-img"
+                        style="max-width: 150px; height: auto; border-radius: 8px;">
                 </td>
                 <td>
-                    <button onclick='process("{{ file }}")'>Process</button>
+                    <a href="/{{ file }}" class="blue-text text-darken-3">{{ file }}</a>
+                </td>
+                <td>
+                    <button class="btn waves-effect waves-light blue darken-3"
+                        onclick='process("{{ file }}")'>Process</button>
                 </td>
             </tr>
-        {% endfor %}
+            {% endfor %}
+        </tbody>
     </table>
-    <h2>Processed</h2>
-    <table>
-        {% for file in processed %}
+
+    <!-- Processed Files Section -->
+    <h2 class="blue-text text-darken-3">Processed</h2>
+
+    <table class="striped centered responsive-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in processed %}
             <tr>
                 <td>
-                    <a href="/{{ file }}" >{{ file }}</a>
+                    <img src="/{{ file }}" alt="image" class="responsive-img"
+                        style="max-width: 150px; height: auto; border-radius: 8px;">
+                </td>
+                <td>
+                    <a href="/{{ file }}" class="blue-text text-darken-3">{{ file }}</a>
                 </td>
             </tr>
-        {% endfor %}
+            {% endfor %}
+        </tbody>
     </table>
-    <script>
-        function process(filename){
-            console.log(filename);
-            $.ajax({url: "/api/process?filename=" + filename, success: function(result){
-                    $("#div1").html(result);
-                }});
-        }
-    </script>
+</div>
+
+<script>
+    function process(filename) {
+        var quantile = document.getElementById('quantileInput').value;
+        console.log(filename);
+        console.log(quantile);
+        $.ajax({
+            url: "/api/process?filename=" + filename + "&quantile=" + quantile,
+            success: function (result) {
+                $("#div1").html(result);
+            }
+        });
+    }
+</script>
+
 {% endblock %}
