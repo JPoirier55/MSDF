@@ -60,13 +60,13 @@ Usage
 
 ## Screenshots
 ### Initial image
-![Alt text](media/pineaple.png)
+![Alt text](color_app/examples/pineaple.png)
 
 ### Mean shifted image
-![Alt text](media/results/pineaple_meanshift.png)
+![Alt text](color_app/examples/pineaple_meanshift.png)
 
 ### DMC floss guideline page
-![Alt text](media/dmc_results/pineaple_meanshift_dmc.png)
+![Alt text](color_app/examples/pineaple_meanshift_dmc.png)
 
 ## Contributing
 We welcome contributions! If you'd like to help improve this project, feel free to submit a pull request or open an issue.
